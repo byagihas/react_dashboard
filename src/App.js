@@ -6,6 +6,7 @@ const { DateTime } = require('luxon')
 
 class App extends Component {
 
+  // Constructor
   constructor(props) {
     const time = new Date(Date.now()).toISOString();
     const localetime = new Date(Date.now()).toUTCString();
@@ -30,7 +31,8 @@ class App extends Component {
       urlTraced: null
     }
   }
-
+  // compentDidMount
+  // initialize time
   componentDidMount(){
     window.setInterval(function() {
       /*
@@ -63,7 +65,6 @@ class App extends Component {
         currentDate: timeFormat,
         currentDateLocale: localetime
       });
-      
     }.bind(this), 1000)
   }
 
