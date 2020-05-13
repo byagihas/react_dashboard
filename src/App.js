@@ -1,12 +1,13 @@
+
+'use strict';
+
 import React, { Component } from 'react';
 import Markets from './Markets.js';
 import logo from './logo.svg';
 import './App.css';
 
 const { DateTime } = require('luxon');
-const cheerio = require('cheerio');
 class App extends Component {
-
   // Constructor
   constructor(props) {
     const time = new Date(Date.now()).toISOString();
@@ -36,8 +37,9 @@ class App extends Component {
    componentDidMount(){
       const browsertime = Intl.DateTimeFormat().resolvedOptions().timeZone;
       let location = browsertime.substring(browsertime.indexOf("/"), browsertime.length + 1);
-      let weatherAPI = `https://api.weatherapi.com/v1/current.json?key=9923485ed49944f0a0e05530201305&q=${location}`;
-    // let weatherAPI = 'https://www.yahoo.com/news/weather/';
+      // Using weather API's free service to get token
+      let WEATHERKEY = '';
+      let weatherAPI = `https://api.weatherapi.com/v1/current.json?key=${WEATHERKEY}&q=${location}`;
       const requestOptions = {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
@@ -46,7 +48,6 @@ class App extends Component {
       fetch(weatherAPI, requestOptions)
       .then(response => response.json())
       .then(json => {
-        console.log(json);
         this.setState({ weather: json.current.temp_f});
       });
 
