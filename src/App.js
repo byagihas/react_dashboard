@@ -1,12 +1,12 @@
-
-'use strict';
-
 import React, { Component } from 'react';
 import Markets from './Markets.js';
 import logo from './logo.svg';
 import './App.css';
 
 const { DateTime } = require('luxon');
+const encoding_f = require('encoding');
+const cheerio = require('cheerio');
+
 class App extends Component {
   // Constructor
   constructor(props) {
@@ -29,7 +29,8 @@ class App extends Component {
       currentDate: timeFormat,
       currentDateLocale: localetime,
       urlTraced: null,
-      weather: null
+      weather: null,
+      headers: null
     }
   }
   // compentDidMount
@@ -37,19 +38,49 @@ class App extends Component {
    componentDidMount(){
       const browsertime = Intl.DateTimeFormat().resolvedOptions().timeZone;
       let location = browsertime.substring(browsertime.indexOf("/"), browsertime.length + 1);
+
       // Using weather API's free service to get token
       let WEATHERKEY = '';
       let weatherAPI = `https://api.weatherapi.com/v1/current.json?key=${WEATHERKEY}&q=${location}`;
+      let headers_s = '';
+    /*
+      fetch('/').then(response=>{
+        headers_s = response.headers;
+        this.setState({ headers: headers_s });
+      });*/
+
       const requestOptions = {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       };
-      
+
+      const weatherHeaders = {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language' : 'en-US, en;q=0.5',
+        'DNT' : '1',
+        'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0'
+      }
+
+      let arr = [];
+      let encoding = 'UTF-8';
+      fetch('https://www.yahoo.com/news/weather/', weatherHeaders)
+      .then((response) => { 
+        console.log(response.text())
+        const $ = cheerio.load(encoding_f.convert(response.text(), encoding).toString('utf8'), encoding);
+        response = JSON.stringify($('.now > span').contents().first().text());
+        return response;
+      })
+      .then(html => {
+        this.setState({ weather: html });
+      })
+      .catch((err) => console.error(err));
+
+      /*
       fetch(weatherAPI, requestOptions)
       .then(response => response.json())
       .then(json => {
         this.setState({ weather: json.current.temp_f});
-      });
+      });*/
 
     window.setInterval(function() {
       const time = new Date(Date.now()).toISOString();
@@ -65,12 +96,13 @@ class App extends Component {
       let second = String(converted.c.second).length > 1 ? converted.c.second : '0' + converted.c.second;
 
       let timeFormat = year  + '/' + month + '/' + day + ' ' + hour + ':' + minute + ':' + second
-    
+
       this.setState({
         currentBrowserTime: browsertime,
         currentDate: timeFormat,
         currentDateLocale: localetime
       });
+
     }.bind(this), 1000);
   }
 
@@ -79,6 +111,7 @@ class App extends Component {
     const { currentDateLocale } = this.state;
     const { currentBrowserTime } = this.state;
     const { weather } = this.state;
+    const { headers } = this.state;
     return (
       
       <div className="App">
@@ -98,6 +131,8 @@ class App extends Component {
             <tr>
               <td>
                 Current temperature: {weather} F
+                <br/>
+                Headers: {headers}
               </td>
             </tr>
           </table>
