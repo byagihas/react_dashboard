@@ -58,20 +58,20 @@ class App extends Component {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Language' : 'en-US, en;q=0.5',
         'DNT' : '1',
-        'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0'
+        'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0',
+        'X-Requested-With' : '1'
       }
 
       let arr = [];
       let encoding = 'UTF-8';
-      fetch('https://www.yahoo.com/news/weather/', weatherHeaders)
+      fetch('https://cors-anywhere.herokuapp.com/https://www.yahoo.com/news/weather?=&=', weatherHeaders)
       .then((response) => { 
-        console.log(response.text())
-        const $ = cheerio.load(encoding_f.convert(response.text(), encoding).toString('utf8'), encoding);
-        response = JSON.stringify($('.now > span').contents().first().text());
-        return response;
+        return response.text();
       })
       .then(html => {
-        this.setState({ weather: html });
+        const $ = cheerio.load(encoding_f.convert(html, encoding).toString('utf8'), encoding);
+        let string_t = JSON.stringify($('.now > span').contents().first().text());
+        this.setState({ weather: string_t });
       })
       .catch((err) => console.error(err));
 
