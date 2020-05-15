@@ -10,10 +10,9 @@ class Markets extends Component {
 
     // Constructor
     constructor(props) {
-        let price = '1';
+        
         super(props);
         this.state = {
-            marketprices: price
         }
     }
 
@@ -23,15 +22,14 @@ class Markets extends Component {
     }
 
     render() {
-        const marketprices = this.state.bind(marketprices);
         return (
-        <div className="Markets">
-            <header className="Markets-header">
+        <div className="App">
+            <header className="App-header">
                 <h2>Current time</h2>
-                    <table classname="Markets-table">
+                    <table classname="App-table">
                         <tr>
                             <td>
-                                Markets {marketprices}
+                                Markets
                             </td>
                         </tr>
                     </table>
