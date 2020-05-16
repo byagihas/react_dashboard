@@ -35,9 +35,10 @@ class App extends Component {
       markets_dji_p: '...',
       markets_nasdaq_m: '...',
       markets_nasdaq_p: '...',
-      news_general: null
-    }
-  }
+      news_general: null,
+      news_timestamp: null
+    };
+  };
   // compentDidMount
   // initialize time
    componentDidMount(){
@@ -111,31 +112,32 @@ class App extends Component {
       // getNews
       //  Fetch and parse data for news
       const getNews = function(){
-        fetch('https://cors-anywhere.herokuapp.com/https://www.reuters.com/theWire', headers)
+        fetch('https://cors-anywhere.herokuapp.com/https://www.reuters.com/theWire?=&=', headers)
           .then((response) => { 
-              return response.text();
-          }).then(html => {
-              const $ = cheerio.load(encoding_f.convert(html, encoding).toString('utf8'), encoding);
-              let news_string = JSON.stringify($('.FeedItemHeadline_headline  > a').contents().map(function(){
-                  return $(this).text();
-              }).get().join('|'));
-
-              let news_formatted = news_string.split('\"').join('').split('|');
-              const news = function listNews() {
-                let limit = 10;
-                return (
-                  news_formatted.map((item, index) => (
-                    index < limit ? <li key={index}>{item}</li> : ''
-                  ))
-                );
-              };
-              console.log(news_formatted)
-              this.setState({ news_general: news() });
+            return response.text();
+          }).then(body => {
+            const $ = cheerio.load(encoding_f.convert(body, encoding).toString('utf8'), encoding);
+            let news_string = JSON.stringify($('.FeedItemHeadline_headline  > a').contents().map(function(){
+                return $(this).text();
+            }).get().join('|'));
+            let time_string = JSON.stringify($('.FeedItemMeta_date-updated').contents().map(function(){
+              return $(this).text();
+            }).get().join('|'));
+            let news_formatted = news_string.split('\"').join('').split('|');
+            let time_formatted = time_string.split('\"').join('').split('|');
+            const news = (arr1, arr2) => {
+              let limit = 20;
+              return (
+                arr1.map((item, index) => (
+                  index < limit ? <li key={index}>{item} - {arr2[index]}</li> : ''
+                ))
+              )
+            }
+            this.setState({ news_general: news(news_formatted, time_formatted)});
           }).catch((err) => console.error(err));
       }.bind(this);
 
       // Run data functions once
-      
       getMarkets();
       getWeather(weathercode);
       getNews();
@@ -144,7 +146,7 @@ class App extends Component {
       window.setTimeout(() => {
         document.getElementById('root').style.display = 'block';
         document.getElementById('spinner').style.display = 'none';
-      }, 1000);
+      }, 2000);
 
       // Run data streams at intervals
       window.setInterval(function() {
@@ -152,8 +154,11 @@ class App extends Component {
       }.bind(this), 60000);
 
       window.setInterval(function() {
-        getMarkets();
         getNews();
+      }.bind(this), 60000);
+
+      window.setInterval(function() {
+        getMarkets();
       }.bind(this), 60000);
 
       window.setInterval(function() {
@@ -191,6 +196,7 @@ class App extends Component {
     const { markets_nasdaq_p } = this.state;
     const { headers } = this.state;
     const { news_general } = this.state;
+    const { news_timestamp } = this.state;
 
     let dji_percentage = 'neutral';
     let nasdaq_percentage = 'neutral';
@@ -221,23 +227,28 @@ class App extends Component {
           <br/>
           <table classname="App-table">
             <th><strong>Markets</strong></th>
-            <tbody>
-              <tr>
-                <td>Dow Jones: {markets_dji_m.replace('"','').replace('"','')}&nbsp;&nbsp;
-                <span style={{color: dji_percentage }}>{markets_dji_p.replace('"','').replace('"','')}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                <td>NASDAQ: {markets_nasdaq_m.replace('"','').replace('"','')}&nbsp;&nbsp;
-                <span style={{color: nasdaq_percentage }}>{markets_nasdaq_p.replace('"','').replace('"','')}</span></td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <td>S&P 500: </td>
-              </tr>
-            </tbody>
+              <tbody>
+                <tr>
+                  <td>Dow Jones: {markets_dji_m.replace('"','').replace('"','')}&nbsp;&nbsp;
+                  <span style={{color: dji_percentage }}>{markets_dji_p.replace('"','').replace('"','')}</span>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  </td>
+                  <td>NASDAQ: {markets_nasdaq_m.replace('"','').replace('"','')}&nbsp;&nbsp;
+                  <span style={{color: nasdaq_percentage }}>{markets_nasdaq_p.replace('"','').replace('"','')}</span>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  </td>
+                  <td>S&P 500: </td>
+                </tr>
+              </tbody>
           </table>
           <br/>
           <table classname="App-table">
             <th><strong>News</strong></th>
             <tbody>
               <tr>
-                <td><ul>{ news_general }</ul></td>
+                <ul>
+                 { news_general }
+                </ul>
               </tr>
             </tbody>
           </table>
