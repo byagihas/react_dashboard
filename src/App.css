@@ -2,9 +2,10 @@
   text-align: center;
   display: block;
   margin: 0 auto;
-  background-color: black;
-  height: 100em;
-  padding: 5em;
+  background-color: #242222;
+  height: 100%;
+  padding: 3em;
+  font-family: 'Helvetica';
 }
 
 .App-logo {
@@ -12,12 +13,17 @@
 }
 
 .App-header {
-  background-color: #363434;
-  border: 1px solid #b8ddd6;
-  padding: 1em;
+  background-color: #3a3939;
+  padding: 1.7em;
   text-align: left;
-  font-size: 1.5em;
-  color: #09d3ac;
+  font-size: 1.6em;
+  color: #e8ebea;
+  border-radius: .2em;
+}
+
+th {
+  font-family: 'Consolas';
+  font-size: 1.7em;
 }
 
 .App-link {
@@ -25,7 +31,8 @@
 }
 
 .App-table {
-  background-color: black;
+  background-color: rgb(34, 40, 44);
+  border-radius: 3px;
   width: 680px;
   padding:1em;
   display: block;
@@ -34,5 +41,12 @@
 }
 
 .App-table td{
-  padding:1em;
+  padding:.1em;
+  display: inline-block;
+  font-size: .9em;
 }
+
+.App-table ul, li{
+  list-style-type: square;
+}
+

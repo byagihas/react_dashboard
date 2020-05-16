@@ -35,6 +35,7 @@ class App extends Component {
       markets_dji_p: '...',
       markets_nasdaq_m: '...',
       markets_nasdaq_p: '...',
+      news_general: null
     }
   }
   // compentDidMount
@@ -43,15 +44,18 @@ class App extends Component {
       const browsertime = Intl.DateTimeFormat().resolvedOptions().timeZone;
       let location = browsertime.substring(browsertime.indexOf("/"), browsertime.length + 1);
       let weathercode = '2379574';
+
       let encoding = 'UTF-8';
       const headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Language' : 'en-US, en;q=0.5',
         'DNT' : '1',
         'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0',
-        'X-Requested-With' : Math.random()
-      }
+        'X-Requested-With' : Math.random() // Sending random value for required CORS reroute
+      };
 
+      // getWeather
+      // Fetch and parse data for weather
       const getWeather = function(code){
           let weatherURL = `https://cors-anywhere.herokuapp.com/https://www.yahoo.com/news/weather/united-states/new-york/new-york-${code}`;
           fetch(weatherURL, headers)
@@ -71,6 +75,8 @@ class App extends Component {
           }).catch((err) => console.error(err));
       }.bind(this);
 
+      // getMarkets
+      // Fetch and parse data for markets
       const getMarkets = function(){
         fetch('https://cors-anywhere.herokuapp.com/https://www.marketwatch.com/?=&=', headers)
         .then((response) => { 
@@ -102,20 +108,52 @@ class App extends Component {
         }).catch((err) => console.error(err));
       }.bind(this);
 
+      // getNews
+      //  Fetch and parse data for news
+      const getNews = function(){
+        fetch('https://cors-anywhere.herokuapp.com/https://www.reuters.com/theWire', headers)
+          .then((response) => { 
+              return response.text();
+          }).then(html => {
+              const $ = cheerio.load(encoding_f.convert(html, encoding).toString('utf8'), encoding);
+              let news_string = JSON.stringify($('.FeedItemHeadline_headline  > a').contents().map(function(){
+                  return $(this).text();
+              }).get().join('|'));
+
+              let news_formatted = news_string.split('\"').join('').split('|');
+              const news = function listNews() {
+                let limit = 10;
+                return (
+                  news_formatted.map((item, index) => (
+                    index < limit ? <li key={index}>{item}</li> : ''
+                  ))
+                );
+              };
+              console.log(news_formatted)
+              this.setState({ news_general: news() });
+          }).catch((err) => console.error(err));
+      }.bind(this);
+
+      // Run data functions once
+      
       getMarkets();
       getWeather(weathercode);
+      getNews();
 
+      // Set spinner at 2 seconds to allow for loading.
       window.setTimeout(() => {
         document.getElementById('root').style.display = 'block';
         document.getElementById('spinner').style.display = 'none';
-      }, 2000);
+      }, 1000);
 
+      // Run data streams at intervals
       window.setInterval(function() {
         getWeather(weathercode);
       }.bind(this), 60000);
 
       window.setInterval(function() {
         getMarkets();
+        getNews();
       }.bind(this), 60000);
 
       window.setInterval(function() {
@@ -124,21 +162,19 @@ class App extends Component {
         const browsertime = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const converted = DateTime.fromISO(time, { zone: browsertime });
 
-        let year = converted.c.year
+        let year = converted.c.year;
         let month = String(converted.c.month).length > 1 ? converted.c.month : '0' + converted.c.month;
         let day = String(converted.c.day).length > 1 ? converted.c.day : '0' + converted.c.day;
         let hour = String(converted.c.hour).length > 1 ? converted.c.hour : '0' + converted.c.hour;
         let minute = String(converted.c.minute).length > 1 ? converted.c.minute : '0' + converted.c.minute;
         let second = String(converted.c.second).length > 1 ? converted.c.second : '0' + converted.c.second;
-
-        let timeFormat = year  + '/' + month + '/' + day + ' ' + hour + ':' + minute + ':' + second
+        let timeFormat = year  + '/' + month + '/' + day + ' ' + hour + ':' + minute + ':' + second;
 
         this.setState({
           currentBrowserTime: browsertime,
           currentDate: timeFormat,
           currentDateLocale: localetime
         });
-
       }.bind(this), 1000);
   }
 
@@ -154,6 +190,8 @@ class App extends Component {
     const { markets_nasdaq_m } = this.state;
     const { markets_nasdaq_p } = this.state;
     const { headers } = this.state;
+    const { news_general } = this.state;
+
     let dji_percentage = 'neutral';
     let nasdaq_percentage = 'neutral';
     parseInt(markets_dji_p) < 0 ? dji_percentage = 'red' : dji_percentage = 'green';
@@ -162,48 +200,48 @@ class App extends Component {
    return (
       <div className="App">
         <header className="App-header">
-          <table classname="App-table">
-            <tr><td><strong>Time/Weather: </strong></td></tr>
-            <tr>
-              <td>
-               Current locale time({currentBrowserTime}): {currentDate}
-              </td>
-            </tr>
-            <tr>
-              <td>
-               Current UTC time: {currentDateLocale}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <form>
-                  <input value="Enter a City, etc. Seattle, WA"></input>
-                  <button class=".App-button">Change location</button>
-                </form>
-              </td>
-            </tr>
-            <tr>
-              <td>
+          <table class="App-table">
+              <th>
+                  <strong>QuBoard</strong>
+              </th>
+              <tbody>
+                <td>
+                  Locale time: ({currentBrowserTime}): {currentDate}
+                </td>
+                <td>
+                  UTC time: {currentDateLocale}
+                </td>
+                <td>
                 Current temperature: {weather_current.replace('"','').replace('"','')} F &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                H: {weather_h.replace('"','').replace('"','')} F &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                L: {weather_l.replace('"','').replace('"','')} F
-                <br/>
-              </td>
-            </tr>
+                </td>
+                <td>H: {weather_h.replace('"','').replace('"','')} F &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td>L: {weather_l.replace('"','').replace('"','')} F</td>
+              </tbody>
+            </table>
+          <br/>
+          <table classname="App-table">
+            <th><strong>Markets</strong></th>
+            <tbody>
+              <tr>
+                <td>Dow Jones: {markets_dji_m.replace('"','').replace('"','')}&nbsp;&nbsp;
+                <span style={{color: dji_percentage }}>{markets_dji_p.replace('"','').replace('"','')}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td>NASDAQ: {markets_nasdaq_m.replace('"','').replace('"','')}&nbsp;&nbsp;
+                <span style={{color: nasdaq_percentage }}>{markets_nasdaq_p.replace('"','').replace('"','')}</span></td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <td>S&P 500: </td>
+              </tr>
+            </tbody>
           </table>
           <br/>
           <table classname="App-table">
-            <tr><td><strong>Markets</strong></td></tr>
-            <tr>
-              <td>Dow Jones: {markets_dji_m.replace('"','').replace('"','')}&nbsp;&nbsp;
-              <span style={{color: dji_percentage }}>{markets_dji_p.replace('"','').replace('"','')}</span>
-              </td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <td>NASDAQ: {markets_nasdaq_m.replace('"','').replace('"','')}&nbsp;&nbsp;
-              <span style={{color: nasdaq_percentage }}>{markets_nasdaq_p.replace('"','').replace('"','')}</span></td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <td>S&P 500: </td>
-            </tr>
+            <th><strong>News</strong></th>
+            <tbody>
+              <tr>
+                <td><ul>{ news_general }</ul></td>
+              </tr>
+            </tbody>
           </table>
-        </header>
+      </header>
       </div>
     );
   } 
