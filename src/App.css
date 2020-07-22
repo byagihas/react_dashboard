@@ -14,16 +14,17 @@
 
 .App-header {
   background-color: #3a3939;
-  padding: 1.7em;
+  padding: 1.2em;
   text-align: left;
-  font-size: 1.6em;
+  font-size: 1.3em;
   color: #e8ebea;
   border-radius: .2em;
+  display: inline-block;
 }
 
 th {
   font-family: 'Consolas';
-  font-size: 1.7em;
+  font-size: 1.5em;
 }
 
 .App-link {
@@ -34,19 +35,22 @@ th {
   background-color: rgb(34, 40, 44);
   border-radius: 3px;
   width: 680px;
-  padding:1em;
+  padding:.3em;
   display: block;
   margin: 0 auto;
-  text-align: left;
+  text-align: center;
 }
 
 .App-table td{
-  padding:.1em;
+  padding:.3em;
   display: inline-block;
-  font-size: .9em;
+  font-size: 1em;
 }
 
 .App-table ul, li{
+  padding: .3em;
+  display: block;
   list-style-type: square;
+  text-align: left;
 }
 
