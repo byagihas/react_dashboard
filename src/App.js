@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 const { DateTime } = require('luxon');
@@ -13,9 +12,7 @@ class App extends Component {
     const localetime = new Date(Date.now()).toUTCString();
     const browsertime = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const converted = DateTime.fromISO(time, { zone: browsertime });
-    const latitude = '';
-    const longitutde = '';
-    
+
     let year = converted.c.year;
     let month = String(converted.c.month).length > 1 ? converted.c.month : '0' + converted.c.month;
     let day = String(converted.c.day).length > 1 ? converted.c.day : '0' + converted.c.day;
@@ -30,7 +27,6 @@ class App extends Component {
       currentBrowserTime: "Loading..",
       currentDate: timeFormat,
       currentDateLocale: localetime,
-      urlTraced: '',
       weather_current: "...",
       short_forecast: '...',
       detailed_forecast: '...',
@@ -39,7 +35,6 @@ class App extends Component {
       markets_nasdaq_m: '...',
       markets_nasdaq_p: '...',
       news_general: null,
-      news_timestamp: null,
       crypto_name: null,
       crypto_price: null,
       lat_long: null
@@ -48,10 +43,6 @@ class App extends Component {
   // compentDidMount
   // initialize time
    componentDidMount(){
-      const browsertime = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      let location = browsertime.substring(browsertime.indexOf("/"), browsertime.length + 1);
-      let weathercode = '2379574';
-
       let encoding = 'UTF-8';
       let headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -61,38 +52,39 @@ class App extends Component {
         'X-Requested-With' : Math.random(),// Sending random value for required CORS reroute
         'Access-Control-Allow-Origin' : '*'
       };
-
+      // get Lat Long from User and Run weather function
       const getLatLong = function(){ 
         navigator.geolocation.getCurrentPosition(
             function(position){
               this.setState({ 
                 lat_long: position.coords.latitude + "," + position.coords.longitude
               });
+              getWeatherNWS(this.state.lat_long);
             }.bind(this)
         );
       }.bind(this);
 
       const getWeatherNWS = function(latlong){
-        let weatherAPI = `https://api.weather.gov/points/${latlong}`;
-        fetch(weatherAPI, headers)
-        .then((response) => { 
-            return response.json();
-        }).then(json => {
-              let forecast = json.properties.forecast;
-              fetch(forecast, headers)
-              .then((response) => { 
-                  return response.json();
-              }).then(json => {
-                  let temp = json.properties.periods[0].temperature;
-                  let short_forecast = json.properties.periods[0].shortForecast;
-                  let detailed_forecast = json.properties.periods[0].detailedForecast;
-                  this.setState({ 
-                    weather_current: temp,
-                    short_forecast: short_forecast,
-                    detailed_forecast: detailed_forecast
-                  });
-              }).catch((err) => console.error(err));
-        }).catch((err) => console.error(err));
+          let weatherAPI = `https://api.weather.gov/points/${latlong}`;
+          fetch(weatherAPI, headers)
+          .then((response) => { 
+              return response.json();
+          }).then(json => {
+                let forecast = json.properties.forecast;
+                fetch(forecast, headers)
+                .then((response) => { 
+                    return response.json();
+                }).then(json => {
+                    let temp = json.properties.periods[0].temperature;
+                    let short_forecast = json.properties.periods[0].shortForecast;
+                    let detailed_forecast = json.properties.periods[0].detailedForecast;
+                    this.setState({ 
+                      weather_current: temp,
+                      short_forecast: short_forecast,
+                      detailed_forecast: detailed_forecast
+                    });
+                }).catch((err) => console.error(err));
+          }).catch((err) => console.error(err));
       }.bind(this);
 
       // getMarkets
@@ -105,26 +97,20 @@ class App extends Component {
             const $ = cheerio.load(encoding_f.convert(html, encoding).toString('utf8'), encoding);
             let string_full_m = JSON.stringify($('.price').contents().map(function(){
               let formatted = $(this).text().replace('\n', ' ').replace('\\s','').replace(' ','').trim();
-              if(formatted != ''){
-                return formatted + '|';
-              };
+              return formatted !== '' ? formatted + '|' : '';
             }).get().join('').split(' ').join(''));
             let string_full_p = JSON.stringify($('.percent').contents().map(function(){
               let formatted = $(this).text().replace('\n', ' ').replace('\\s','').replace(' ','').trim();
-              if(formatted != ''){
-                return formatted + '|';
-              }
+              return formatted !== '' ? formatted + '|' : '';
             }).get().join('').split(' ').join(''));
             let string_full_name = JSON.stringify($('.symbol').contents().map(function(){
               let formatted = $(this).text().replace('\n', ' ').replace('\\s','').replace(' ','').trim();
-              if(formatted != ''){
-                return formatted + '|';
-              }
+              return formatted !== '' ? formatted + '|' : '';
             }).get().join('').split('"').join('').split(' ').join(''));
 
-            let string_formatted_m = string_full_m.replace('\"','').split("|");
-            let string_formatted_p = string_full_p.replace('\"','').split("|");
-            let string_formatted_name = string_full_name.replace('\"','').split("|");
+            let string_formatted_m = string_full_m.replace('"','').split("|");
+            let string_formatted_p = string_full_p.replace('"','').split("|");
+            let string_formatted_name = string_full_name.replace('"','').split("|");
 
             const markets = (arr1, arr2, arr3) => {
               let limit = 6;
@@ -146,19 +132,15 @@ class App extends Component {
             const $ = cheerio.load(encoding_f.convert(html, encoding).toString('utf8'), encoding);
             let string_full_price = JSON.stringify($('.cmc-table__cell--sort-by__price > a').contents().map(function(){
               let formatted = $(this).text().replace('\n', ' ').replace('\\s','').replace(' ','').trim();
-              if(formatted != ''){
-                return formatted + '|';
-              };
+              return formatted !== '' ? formatted + '|' : '';
             }).get().join('').split('"').join('').split(' ').join(''));
             let string_full_name = JSON.stringify($('.cmc-table__cell--sort-by__name > div > a').contents().map(function(){
               let formatted = $(this).text().replace('\n', ' ').replace('\\s','').replace(' ','').trim();
-              if(formatted != ''){
-                return formatted + '|';
-              }
+              return formatted !== '' ? formatted + '|' : '';
             }).get().join('').split('"').join('').split(' ').join(''));
 
-            let string_f_name = string_full_name.split('\"').join('').split('|');
-            let string_f_price = string_full_price.split('\"').join('').split('|');
+            let string_f_name = string_full_name.split('"').join('').split('|');
+            let string_f_price = string_full_price.split('"').join('').split('|');
             const crypto = (arr1, arr2) => {
               let limit = 6;
               return (
@@ -166,65 +148,49 @@ class App extends Component {
                   index < limit ? <li key={index}>{index + 1}. {item} - {arr2[index]}</li> : ''
                 ))
               )
-            }
+            };
             this.setState({
               crypto_name: crypto(string_f_name,string_f_price)
             });
         }).catch((err) => console.error(err));
       }.bind(this);
 
-      // getNews
+      //  NEWS Function
       //  Fetch and parse data for news
-      const getNews = function(){
-        fetch('https://cors-anywhere.herokuapp.com/https://www.reuters.com/theWire?=&=', headers)
+      const getNews = function(news_length){
+        // https://newsapi.org/docs/get-started
+        var newsURL = 'http://newsapi.org/v2/top-headlines?country=us&apiKey=a62a3c4e840a4b5091463ed1ecc5e0e6';
+        fetch(newsURL, headers)
           .then((response) => { 
-            return response.text();
-          }).then(body => {
-            const $ = cheerio.load(encoding_f.convert(body, encoding).toString('utf8'), encoding);
-            let news_string = JSON.stringify($('.FeedItemHeadline_headline  > a').contents().map(function(){
-                return $(this).text();
-            }).get().join('|'));
-            let time_string = JSON.stringify($('.FeedItemMeta_date-updated').contents().map(function(){
-              return $(this).text();
-            }).get().join('|'));
-
-            let news_formatted = news_string.split('\"').join('').split('|');
-            let time_formatted = time_string.split('\"').join('').split('|');
-            const news = (arr1, arr2) => {
-              let limit = 10;
-              return (
-                arr1.map((item, index) => (
-                  index < limit ? <li key={index}>{item} - {arr2[index]}</li> : ''
-                ))
-              )
-            }
-            this.setState({ news_general: news(news_formatted, time_formatted)});
+            return response.json();
+          }).then(json => {
+            let headlines = [];
+            for(let i=0;i<news_length;i++){
+              headlines.push(<tr key={i}><td><a href={json.articles[i].url}><img src={json.articles[i].urlToImage} width='100' height='60' alt=''/><span>{json.articles[i].title}</span></a></td></tr>);
+            };
+            this.setState({ news_general: headlines });
           }).catch((err) => console.error(err));
       }.bind(this);
 
       // Run data functions once
       getLatLong();
-      //getWeather(weathercode);
       getMarkets();
       getCrypto();
-      getNews();
+      getNews(10);
 
       // Set spinner at 2 seconds to allow for loading.
       window.setTimeout(() => {
         document.getElementById('root').style.display = 'block';
         document.getElementById('spinner').style.display = 'none';
-        getWeatherNWS(this.state.lat_long);
-      }, 3000);
+      }, 2000);
 
       // Run data streams at intervals
       window.setInterval(function() {
-      }.bind(this), 5000);
-
-      window.setInterval(function() {
         getNews();
-      }.bind(this), 60000);
+      }, 60000);
 
       window.setInterval(function() {
+        getWeatherNWS(this.state.lat_long);
         getMarkets();
       }.bind(this), 60000);
 
@@ -256,64 +222,84 @@ class App extends Component {
     const { currentDateLocale } = this.state;
     const { currentBrowserTime } = this.state;
     const { weather_current } = this.state;
-    const { short_forecast } = this.state;
+    //const { short_forecast } = this.state;
     const { markets_dji_m } = this.state;
-    const { markets_dji_p } = this.state;
-    const { markets_nasdaq_m } = this.state;
-    const { markets_nasdaq_p } = this.state;
-    const { headers } = this.state;
+    //const { markets_dji_p } = this.state;
+    //const { markets_nasdaq_m } = this.state;
+    //const { markets_nasdaq_p } = this.state;
     const { news_general } = this.state;
-    const { news_timestamp } = this.state;
+    //const { news_timestamp } = this.state;
     const { crypto_name } = this.state;
-    const { crypto_price } = this.state;
+    //const { crypto_price } = this.state;
     const { detailed_forecast } = this.state;
 
    return (
       <div className="App">
         <header className="App-header">
-          <table class="App-table">
-              <th>
-                  <strong>QuBoard</strong>
-              </th>
-              <tbody>
-                <td>Lat/long: {lat_long}</td>
-                <td>
-                  Locale time: ({currentBrowserTime}): {currentDate}
-                </td>
-                <td>
-                  UTC time: {currentDateLocale}
-                </td>
-                <br/>
-                <td>
-                  Current temperature: {weather_current} F
-                </td>
-                <td>
-                  Current forecast:<br/> {detailed_forecast}
-                </td>
-              </tbody>
-            </table>
-          <br/>
-          <table classname="App-table">
-            <th><strong>Markets</strong></th>
+          <table className="App-table">
               <tbody>
                 <tr>
-                  <td>General: <ul>{markets_dji_m}</ul></td>
-                  <td>Crypto: <ul>{crypto_name}</ul> </td>
+                  <th>
+                      <h1><strong>QuBoard</strong></h1>
+                  </th>
+                </tr>
+                <tr>
+                  <td>
+                    Lat/long: {lat_long}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Locale time: ({currentBrowserTime}): {currentDate}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    UTC time: {currentDateLocale}
+                  </td>
                 </tr>
               </tbody>
           </table>
-          <br/>
-          <table classname="App-table">
-            <th><strong>News</strong></th>
+          <table className="App-table">
             <tbody>
               <tr>
-                <ul>
-                 { news_general }
-                </ul>
+                  <td>
+                    Current temperature: {weather_current} F
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                    Current forecast: {detailed_forecast}
+                  </td>
               </tr>
             </tbody>
           </table>
-      </header>
+        </header>
+        <div className="body">
+          <table className="App-table">
+            <tbody>
+              <tr>
+                <th>
+                  <h2><strong>Markets</strong></h2>
+                </th>
+              </tr>
+              <tr>
+                <td>General: <ul>{markets_dji_m}</ul></td>
+                <td>Crypto: <ul>{crypto_name}</ul></td>
+              </tr>
+            </tbody>
+          </table>
+          <table className="App-table">
+              <tbody>
+                <tr>
+                  <th>
+                    <h2><strong>News</strong></h2>
+                  </th>
+                </tr>
+                { news_general }
+              </tbody>
+          </table>
+        </div>
       </div>
     );
   }

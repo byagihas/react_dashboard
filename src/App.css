@@ -6,51 +6,52 @@
   height: 100%;
   padding: 3em;
   font-family: 'Helvetica';
+  width: 70em;
 }
-
-.App-logo {
-  height: 40vmin;
-}
-
-.App-header {
+.App-header{
   background-color: #3a3939;
-  padding: 1.2em;
+  padding: 1.5em;
   text-align: left;
-  font-size: 1.3em;
+  font-size: 1.1em;
   color: #e8ebea;
   border-radius: .2em;
-  display: inline-block;
 }
-
-th {
+.body{
+  margin: 0 auto;
+  padding: 0;
+  color: #e8ebea;
+}
+a{
+  text-decoration: none;
+}
+th{
   font-family: 'Consolas';
   font-size: 1.5em;
 }
-
-.App-link {
-  color: #09d3ac;
-}
-
-.App-table {
+table{
   background-color: rgb(34, 40, 44);
   border-radius: 3px;
-  width: 680px;
-  padding:.3em;
+  padding: 1em;
   display: block;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.App-table td{
-  padding:.3em;
-  display: inline-block;
-  font-size: 1em;
-}
-
-.App-table ul, li{
-  padding: .3em;
-  display: block;
-  list-style-type: square;
   text-align: left;
+}
+td{
+  font-size: 1.2em;
+  padding: .5em;
+}
+span{
+  padding: .5em;
+}
+tr{
+  padding: .5em;
+}
+tr > td > a{
+  padding:.5em;
+  display: inline;
+  color: #e8ebea;
+}
+ul, li{
+  padding: .3em;
+  list-style-type: square;
 }
 
