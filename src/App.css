@@ -6,7 +6,7 @@
   height: 100%;
   padding: 3em;
   font-family: 'Helvetica';
-  width: 70em;
+  max-width: 60em;
 }
 .App-header{
   background-color: #3a3939;
