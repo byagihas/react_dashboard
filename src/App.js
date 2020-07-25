@@ -12,7 +12,6 @@ class App extends Component {
     const localetime = new Date(Date.now()).toUTCString();
     const browsertime = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const converted = DateTime.fromISO(time, { zone: browsertime });
-
     let year = converted.c.year;
     let month = String(converted.c.month).length > 1 ? converted.c.month : '0' + converted.c.month;
     let day = String(converted.c.day).length > 1 ? converted.c.day : '0' + converted.c.day;
@@ -43,6 +42,7 @@ class App extends Component {
   // compentDidMount
   // initialize time
    componentDidMount(){
+
       let encoding = 'UTF-8';
       let headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -52,6 +52,7 @@ class App extends Component {
         'X-Requested-With' : Math.random(),// Sending random value for required CORS reroute
         'Access-Control-Allow-Origin' : '*'
       };
+
       // get Lat Long from User and Run weather function
       const getLatLong = function(){ 
         navigator.geolocation.getCurrentPosition(
@@ -64,6 +65,8 @@ class App extends Component {
         );
       }.bind(this);
 
+      // getWeather using lat long
+      // Weather API
       const getWeatherNWS = function(latlong){
           let weatherAPI = `https://api.weather.gov/points/${latlong}`;
           fetch(weatherAPI, headers)
@@ -118,8 +121,8 @@ class App extends Component {
                 arr1.map((item, index) => (
                   index < limit ? <li key={index}>{arr3[index]}: {item} - {arr2[index]}</li> : ''
                 ))
-              )
-            }
+              );
+            };
             this.setState({ markets_dji_m: markets(string_formatted_m, string_formatted_p, string_formatted_name) });
         }).catch((err) => console.error(err));
       }.bind(this);
@@ -157,9 +160,11 @@ class App extends Component {
 
       //  NEWS Function
       //  Fetch and parse data for news
-      const getNews = function(news_length){
+      const getNews = function(news_length, latlong){
         // https://newsapi.org/docs/get-started
-        var newsURL = 'http://newsapi.org/v2/top-headlines?country=us&apiKey=a62a3c4e840a4b5091463ed1ecc5e0e6';
+        let country = 'us';
+        let newsApiKey = 'a62a3c4e840a4b5091463ed1ecc5e0e6';
+        var newsURL = `http://newsapi.org/v2/top-headlines?country=${country}&apiKey=${newsApiKey}`;
         fetch(newsURL, headers)
           .then((response) => { 
             return response.json();
@@ -192,14 +197,13 @@ class App extends Component {
       window.setInterval(function() {
         getWeatherNWS(this.state.lat_long);
         getMarkets();
-      }.bind(this), 60000);
+      }.bind(this), 120000);
 
       window.setInterval(function() {
         const time = new Date(Date.now()).toISOString();
         const localetime = new Date(Date.now()).toUTCString();
         const browsertime = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const converted = DateTime.fromISO(time, { zone: browsertime });
-
         let year = converted.c.year;
         let month = String(converted.c.month).length > 1 ? converted.c.month : '0' + converted.c.month;
         let day = String(converted.c.day).length > 1 ? converted.c.day : '0' + converted.c.day;
@@ -207,7 +211,6 @@ class App extends Component {
         let minute = String(converted.c.minute).length > 1 ? converted.c.minute : '0' + converted.c.minute;
         let second = String(converted.c.second).length > 1 ? converted.c.second : '0' + converted.c.second;
         let timeFormat = year  + '/' + month + '/' + day + ' ' + hour + ':' + minute + ':' + second;
-
         this.setState({
           currentBrowserTime: browsertime,
           currentDate: timeFormat,
@@ -302,7 +305,7 @@ class App extends Component {
         </div>
       </div>
     );
-  }
-}
+  };
+};
 
 export default App;
