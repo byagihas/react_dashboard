@@ -6,12 +6,12 @@ const encoding_f = require('encoding');
 const cheerio = require('cheerio');
 
 class App extends Component {
-  // Constructor
   constructor(props) {
     const time = new Date(Date.now()).toISOString();
     const localetime = new Date(Date.now()).toUTCString();
     const browsertime = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const converted = DateTime.fromISO(time, { zone: browsertime });
+
     let year = converted.c.year;
     let month = String(converted.c.month).length > 1 ? converted.c.month : '0' + converted.c.month;
     let day = String(converted.c.day).length > 1 ? converted.c.day : '0' + converted.c.day;
@@ -39,10 +39,8 @@ class App extends Component {
       lat_long: null
     };
   };
-  // compentDidMount
-  // initialize time
+   // On component mount/view load
    componentDidMount(){
-
       let encoding = 'UTF-8';
       let headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -212,29 +210,28 @@ class App extends Component {
         let second = String(converted.c.second).length > 1 ? converted.c.second : '0' + converted.c.second;
         let timeFormat = year  + '/' + month + '/' + day + ' ' + hour + ':' + minute + ':' + second;
         this.setState({
-          currentBrowserTime: browsertime,
-          currentDate: timeFormat,
-          currentDateLocale: localetime
+            currentBrowserTime: browsertime,
+            currentDate: timeFormat,
+            currentDateLocale: localetime
         });
       }.bind(this), 1000);
-  }
-
+  };
   render() {
     const { lat_long } = this.state;
     const { currentDate } = this.state;
     const { currentDateLocale } = this.state;
     const { currentBrowserTime } = this.state;
     const { weather_current } = this.state;
-    //const { short_forecast } = this.state;
     const { markets_dji_m } = this.state;
+    const { detailed_forecast } = this.state;
+    const { crypto_name } = this.state;
+    const { news_general } = this.state;
+    //const { short_forecast } = this.state;
     //const { markets_dji_p } = this.state;
     //const { markets_nasdaq_m } = this.state;
     //const { markets_nasdaq_p } = this.state;
-    const { news_general } = this.state;
     //const { news_timestamp } = this.state;
-    const { crypto_name } = this.state;
     //const { crypto_price } = this.state;
-    const { detailed_forecast } = this.state;
 
    return (
       <div className="App">
