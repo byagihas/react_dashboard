@@ -1,5 +1,8 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+React app that displays Dashboard/current time/utility project. Pulls in location to retrieve Weather. Retrieves news and markets(currently not working).
+
+Developing further for styling and better working example.
 
 ## Available Scripts
 
-Dashboard/current time/utility project, built with react
+npm start
