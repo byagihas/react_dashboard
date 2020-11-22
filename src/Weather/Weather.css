@@ -1,56 +1,39 @@
 .Weather {
-    text-align: center;
-    display: block;
-    margin: 0 auto;
-    background-color: #242222;
-    height: 100%;
-    padding: 3em;
-    font-family: 'Helvetica';
-    max-width: 60em;
-  }
-  .Weather-header{
-    background-color: #3a3939;
-    padding: 1.5em;
-    text-align: left;
-    font-size: 1.1em;
-    color: #e8ebea;
-    border-radius: .2em;
-  }
-  .body{
-    margin: 0 auto;
-    padding: 0;
-    color: #e8ebea;
-  }
-  a{
-    text-decoration: none;
-  }
-  th{
-    font-family: 'Consolas';
-    font-size: 1.5em;
-  }
-  table{
-    background-color: rgb(34, 40, 44);
-    border-radius: 3px;
-    padding: 1em;
-    display: block;
-    text-align: left;
-  }
-  td{
-    font-size: 1.2em;
-    padding: .5em;
-  }
-  span{
-    padding: .5em;
-  }
-  tr{
-    padding: .5em;
-  }
-  tr > td > a{
-    padding:.5em;
-    display: inline;
-    color: #e8ebea;
-  }
-  ul, li{
-    padding: .3em;
-    list-style-type: square;
-  }
+  text-align: center;
+  display: block;
+  margin: 0 auto;
+  background-color: #242222;
+  height: 100%;
+  font-family: 'Consolas';
+}
+.Weather-header{
+  background-color: #3a3939;
+  padding: 1em;
+  text-align: left;
+  font-size: 1.3em;
+  color: #e8ebea;
+  border-radius: .2em;
+}
+.Weather-table{
+  padding: 2em;
+  color: #e8ebea;
+}
+.body{
+  margin: 0 auto;
+  padding: 0;
+  color: #e8ebea;
+}
+a{
+  text-decoration: none;
+}
+th{
+  font-family: 'Consolas';
+  font-size: 1.5em;
+}
+table{
+  background-color: rgb(34, 40, 44);
+  border-radius: 3px;
+  padding: 1em;
+  display: block;
+  text-align: left;
+}

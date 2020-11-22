@@ -1,22 +1,18 @@
 import React, { Component } from 'react';
 import './News.css';
 
-const { DateTime } = require('luxon');
-const encoding_f = require('encoding');
-const cheerio = require('cheerio');
-
 class News extends Component {
   constructor(props) {
     super(props);
     this.state = {
       zipcode: null,
       news_general: null,
-      lat_long: null
+      lat_long: null,
+      items: null
     };
   };
    // On component mount/view load
    componentDidMount(){
-      let encoding = 'UTF-8';
       let headers = {
         'Accept': 'text/html,Newslication/xhtml+xml,Newslication/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Language' : 'en-US, en;q=0.5',
@@ -25,17 +21,6 @@ class News extends Component {
         'X-Requested-With' : Math.random(),// Sending random value for required CORS reroute
         'Access-Control-Allow-Origin' : '*'
       };
-
-      // get Lat Long from User and Run weather function
-      const getLatLong = function(){ 
-        navigator.geolocation.getCurrentPosition(
-            function(position){
-              this.setState({ 
-                lat_long: position.coords.latitude + "," + position.coords.longitude
-              });
-            }.bind(this)
-        );
-      }.bind(this);
 
       //  NEWS Function
       //  Fetch and parse data for news
@@ -52,16 +37,13 @@ class News extends Component {
             for(let i=0;i<news_length;i++){
               headlines.push(<tr key={i}><td><a href={json.articles[i].url}><img src={json.articles[i].urlToImage} width='100' height='60' alt=''/><span>{json.articles[i].title}</span></a></td></tr>);
             };
-            this.setState({ news_general: headlines });
+            return this.setState({ news_general: headlines });
           }).catch((err) => console.error(err));
       }.bind(this);
-      getLatLong();
       getNews(10);
   };
   render() {
-    const { lat_long } = this.state;
     const { news_general } = this.state;
-
     return (
         <div className="News">
             <header className="News-header">
