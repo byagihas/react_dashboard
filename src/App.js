@@ -23,10 +23,6 @@ class App extends Component {
       }, 2000);
   };
   render() {
-        const { lat_long } = this.state;
-        const { currentDate } = this.state;
-        const { currentDateLocale } = this.state;
-        const { currentBrowserTime } = this.state;
         return (
           <div className="App">
               <header className="App-header">

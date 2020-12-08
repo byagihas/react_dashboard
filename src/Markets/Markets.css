@@ -4,14 +4,10 @@
   margin: 0 auto;
   background-color: #242222;
   height: 100%;
-  padding: 3em;
-  font-family: 'Helvetica';
-  max-width: 60em;
+  font-family: 'Consolas';
 }
 
 .Markets-header {
-  background-color: #3a3939;
-  padding: 1.5em;
   text-align: left;
   font-size: 1.1em;
   color: #e8ebea;
