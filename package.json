@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "cheerio": "1.0.0-rc.3",
+    "cheerio": "^1.0.0-rc.10",
     "dotenv": "8.2.0",
     "encoding": "0.1.12",
     "luxon": "1.21.3",
@@ -11,7 +11,9 @@
     "react-dom": "^16.14.0",
     "react-scripts": "^3.4.4",
     "request": "2.88.2",
-    "request-promise": "4.2.5"
+    "request-promise": "4.2.5",
+    "yahoo-finance": "0.3.6",
+    "yahoo-stock-prices": "1.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -33,5 +35,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "http://localhost:3001/"
 }

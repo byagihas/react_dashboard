@@ -3,6 +3,7 @@ import './Markets.css';
 
 const encoding_f = require('encoding');
 const cheerio = require('cheerio');
+const stockprices = require('yahoo-stock-prices');
 
 class Markets extends Component {
   constructor(props) {
@@ -64,7 +65,7 @@ class Markets extends Component {
       }.bind(this);
       // Crypto
       const getCrypto = function(){
-        fetch('https://cors-anywhere.herokuMarkets.com/https://www.coinmarketcap.com/', headers)
+        fetch('https://www.coinmarketcap.com/', headers)
         .then((response) => { 
             return response.text();
         }).then(html => {
